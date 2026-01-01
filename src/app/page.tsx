@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TradingLayout } from "@/components/templates/TradingLayout";
 import { TabNavigation } from "@/components/organisms/TabNavigation";
 import { TokenTable } from "@/components/organisms/TokenTable";
+import { TokenGrid } from "@/components/organisms/TokenGrid";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setTokens, setLoading, setError } from "@/features/tokens/tokenSlice";
 import { fetchAllTokens } from "@/features/tokens/tokenAPI";
@@ -16,6 +17,7 @@ export default function Home() {
   const activeCategory = useAppSelector((state) => state.tokens.activeCategory);
   const tokens = useAppSelector((state) => state.tokens.tokens);
   const loading = useAppSelector((state) => state.tokens.loading);
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   // Fetch tokens using React Query
   const { data, isLoading, error } = useQuery({
@@ -66,20 +68,17 @@ export default function Home() {
       <div className="space-y-6">
         {/* Page Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">
-            Token Discovery
-          </h1>
+          <h1 className="text-3xl font-bold text-foreground">Pulse</h1>
           <p className="text-muted-foreground">
-            Track new token pairs, final stretch tokens, and migrated tokens in
-            real-time
+            Discover trending tokens across all networks
           </p>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="bg-card rounded-lg border border-border overflow-hidden">
-          <TabNavigation />
+        {/* Main Content Container */}
+        <div className="bg-card/50 rounded-xl border border-border overflow-hidden backdrop-blur-sm">
+          <TabNavigation viewMode={viewMode} onViewModeChange={setViewMode} />
 
-          {/* Token Table */}
+          {/* Content Area */}
           <div className="p-6">
             {error ? (
               <div className="text-center py-12">
@@ -88,6 +87,11 @@ export default function Home() {
                   {error instanceof Error ? error.message : "Unknown error"}
                 </p>
               </div>
+            ) : viewMode === "grid" ? (
+              <TokenGrid
+                tokens={activeTokens}
+                loading={loading === "loading"}
+              />
             ) : (
               <TokenTable
                 tokens={activeTokens}
@@ -97,7 +101,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Info Cards */}
+        {/* Stats Footer */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-card border border-border rounded-lg p-4">
             <div className="text-muted-foreground text-sm mb-1">
@@ -117,10 +121,14 @@ export default function Home() {
           </div>
           <div className="bg-card border border-border rounded-lg p-4">
             <div className="text-muted-foreground text-sm mb-1">
-              Last Update
+              Live Updates
             </div>
-            <div className="text-2xl font-bold text-foreground">
-              {new Date().toLocaleTimeString()}
+            <div className="text-2xl font-bold text-green-500 flex items-center gap-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </span>
+              Active
             </div>
           </div>
         </div>
