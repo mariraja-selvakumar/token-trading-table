@@ -8,6 +8,12 @@ import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { ChangeIndicator } from "@/components/molecules/ChangeIndicator";
 import { formatNumber } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/atoms/Tooltip";
 
 interface TokenRowProps {
   token: Token;
@@ -92,35 +98,49 @@ export const TokenRow = memo(function TokenRow({
 
       {/* Actions */}
       <td className="px-4 py-3">
-        <div className="flex items-center gap-2 justify-end">
-          <button
-            onClick={handleCopyAddress}
-            className={cn(
-              "p-1.5 rounded hover:bg-muted transition-colors",
-              "group relative"
-            )}
-            title="Copy address"
-          >
-            {copied ? (
-              <Check size={16} className="text-green-500" />
-            ) : (
-              <Copy
-                size={16}
-                className="text-muted-foreground group-hover:text-foreground"
-              />
-            )}
-          </button>
-          <button
-            onClick={handleExternalLink}
-            className="p-1.5 rounded hover:bg-muted transition-colors group"
-            title="View on Etherscan"
-          >
-            <ExternalLink
-              size={16}
-              className="text-muted-foreground group-hover:text-foreground"
-            />
-          </button>
-        </div>
+        <TooltipProvider>
+          <div className="flex items-center gap-2 justify-end">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleCopyAddress}
+                  className={cn(
+                    "p-1.5 rounded hover:bg-muted transition-colors"
+                  )}
+                >
+                  {copied ? (
+                    <Check size={16} className="text-green-500" />
+                  ) : (
+                    <Copy
+                      size={16}
+                      className="text-muted-foreground hover:text-foreground"
+                    />
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{copied ? "Copied!" : "Copy address"}</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleExternalLink}
+                  className="p-1.5 rounded hover:bg-muted transition-colors"
+                >
+                  <ExternalLink
+                    size={16}
+                    className="text-muted-foreground hover:text-foreground"
+                  />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View on Etherscan</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </td>
     </tr>
   );

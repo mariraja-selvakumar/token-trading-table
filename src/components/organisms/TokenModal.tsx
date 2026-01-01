@@ -1,7 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { X, ExternalLink, TrendingUp, TrendingDown } from "lucide-react";
+import { ExternalLink, TrendingUp, TrendingDown } from "lucide-react";
 import { Token } from "@/types/token";
 import {
   formatPrice,
@@ -11,6 +11,12 @@ import {
 } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/atoms/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/atoms/Dialog";
 
 interface TokenModalProps {
   token: Token | null;
@@ -23,29 +29,20 @@ export const TokenModal = memo(function TokenModal({
   isOpen,
   onClose,
 }: TokenModalProps) {
-  if (!isOpen || !token) return null;
+  if (!token) return null;
 
   const isPositive = token.priceChange24h >= 0;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="bg-card rounded-xl max-w-2xl w-full p-6 border border-border shadow-2xl animate-in zoom-in-95"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex items-center gap-4">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-2xl font-bold">
               {token.symbol[0]}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground">
-                {token.name}
-              </h2>
+              <DialogTitle className="text-2xl">{token.name}</DialogTitle>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-muted-foreground">{token.symbol}</span>
                 <span className="text-xs text-muted-foreground">
@@ -54,13 +51,7 @@ export const TokenModal = memo(function TokenModal({
               </div>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded hover:bg-muted"
-          >
-            <X size={24} />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Price Info */}
         <div className="grid grid-cols-2 gap-4 mb-6">
@@ -145,7 +136,7 @@ export const TokenModal = memo(function TokenModal({
             View on Explorer
           </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 });
